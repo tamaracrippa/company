@@ -1,6 +1,6 @@
 package com.company.services;
 
-import com.company.domain.Funcionario;
+import com.company.domain.Funcionarios;
 import com.company.services.repositories.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -20,18 +20,18 @@ public class Consulta implements CommandLineRunner {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
-    private List<Funcionario> funcionarios;
+    private List<Funcionarios> funcionarios;
 
     @Override
     public void run(String... args) {
         funcionarioRepository.deleteByNome("João");
 
         funcionarios = funcionarioRepository.findAll();
-        imprimirFuncionarios();
+        System.out.println(funcionarios);
 
         aplicarAumentoSalario(10);
 
-        Map<String, List<Funcionario>> funcionariosAgrupados = agruparPorFuncao();
+        Map<String, List<Funcionarios>> funcionariosAgrupados = agruparPorFuncao();
         imprimirFuncionariosAgrupadosPorFuncao(funcionariosAgrupados);
 
         imprimirAniversariantes();
@@ -53,11 +53,11 @@ public class Consulta implements CommandLineRunner {
         funcionarioRepository.saveAll(funcionarios);
     }
 
-    private Map<String, List<Funcionario>> agruparPorFuncao() {
-        return funcionarios.stream().collect(Collectors.groupingBy(Funcionario::getFuncao));
+    private Map<String, List<Funcionarios>> agruparPorFuncao() {
+        return funcionarios.stream().collect(Collectors.groupingBy(Funcionarios::getFuncao));
     }
 
-    private void imprimirFuncionariosAgrupadosPorFuncao(Map<String, List<Funcionario>> funcionariosAgrupados) {
+    private void imprimirFuncionariosAgrupadosPorFuncao(Map<String, List<Funcionarios>> funcionariosAgrupados) {
         funcionariosAgrupados.forEach((funcao, listaFuncionarios) -> {
             System.out.println("Função: " + funcao);
             listaFuncionarios.forEach(System.out::println);
@@ -66,20 +66,25 @@ public class Consulta implements CommandLineRunner {
     }
 
     private void imprimirAniversariantes() {
-        List<Funcionario> aniversariantes = funcionarioRepository.findByDataNascimentoMonthIn(10, 12);
-        aniversariantes.forEach(System.out::println);
+        List<String> nomes = funcionarioRepository.findNamesOrderedByBirthdate();
+        nomes.forEach(System.out::println);
     }
 
     private void imprimirMaiorIdade() {
-        Funcionario funcionarioMaisVelho = funcionarios.stream()
-                .max((f1, f2) -> calcularIdade(f1.getDataNascimento()).compareTo(calcularIdade(f2.getDataNascimento())))
-                .orElse(null);
-        System.out.println("Funcionário mais velho:");
-        System.out.println(funcionarioMaisVelho);
+        List<Funcionarios> funcionariosMaisVelhos = funcionarioRepository.findByOlder();
+
+        if (!funcionariosMaisVelhos.isEmpty()) {
+            Funcionarios funcionarioMaisVelho = funcionariosMaisVelhos.get(0);
+            System.out.println("Funcionário mais velho:");
+            System.out.println(funcionarioMaisVelho);
+        } else {
+            System.out.println("Nenhum funcionário encontrado.");
+        }
     }
 
+
     private void imprimirFuncionariosOrdemAlfabetica() {
-        List<Funcionario> funcionariosOrdenados = funcionarioRepository.findAllByOrderByNome();
+        List<Funcionarios> funcionariosOrdenados = funcionarioRepository.findAllByOrderByNome();
         funcionariosOrdenados.forEach(System.out::println);
     }
 
@@ -97,9 +102,13 @@ public class Consulta implements CommandLineRunner {
         });
     }
 
-    private Integer calcularIdade(LocalDate dataNascimento) {
-        LocalDate dataAtual = LocalDate.now();
-        return Period.between(dataNascimento, dataAtual).getYears();
+    public void imprimirTodosFuncionarios() {
+        List<Funcionarios> funcionarios = funcionarioRepository.findAll();
+
+        System.out.println("Lista de Funcionários:");
+        for (Funcionarios funcionario : funcionarios) {
+            System.out.println(funcionario);
+        }
     }
 }
 

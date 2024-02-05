@@ -1,18 +1,16 @@
 package com.company.domain;
 
-import com.company.domain.Pessoa;
-
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 @Entity
-public class Funcionario extends Pessoa {
+public class Funcionarios extends Pessoa {
 
     private BigDecimal salario;
     private String funcao;
 
 
-    public Funcionario(String nome, LocalDate dataNascimento, BigDecimal salario, String funcao) {
+    public Funcionarios(String nome, LocalDate dataNascimento, BigDecimal salario, String funcao) {
         super(nome, dataNascimento);
         this.salario = salario;
         this.funcao = funcao;

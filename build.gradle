@@ -8,7 +8,7 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '11'
+	sourceCompatibility = '17'
 }
 
 repositories {
@@ -27,12 +27,4 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-compileJava {
-	options.compilerArgs << "-Xlint:deprecation"
-}
-
-tasks.withType(JavaCompile) {
-	options.compilerArgs << "-Xlint:deprecation"
 }
